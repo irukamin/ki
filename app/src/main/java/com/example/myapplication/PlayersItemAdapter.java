@@ -72,7 +72,7 @@ public class PlayersItemAdapter extends RecyclerView.Adapter<PlayersItemAdapter.
 
         holder.btnSubtract.setOnClickListener(v -> {
             int currentCount = sharedViewModel.getMoneyCount().getValue()-1;
-            if(currentCount>0)sharedViewModel.setMoneyCount(currentCount);
+            if(currentCount>=0)sharedViewModel.setMoneyCount(currentCount);
             sharedViewModel.updateVictoryPoint(itemList);
             holder.count.setText("金 : "+currentCount);
         });

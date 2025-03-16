@@ -52,6 +52,7 @@ public class PlayersItemAdapter extends RecyclerView.Adapter<PlayersItemAdapter.
             holder.btnAdd.setVisibility(View.VISIBLE);
             holder.btnSubtract.setVisibility(View.VISIBLE);
             holder.count.setVisibility(View.VISIBLE);
+            holder.count.setText("金 : "+sharedViewModel.getMoneyCount().getValue());
         } else {
             // 他のアイテムにはボタンを非表示
             holder.btnAdd.setVisibility(View.GONE);

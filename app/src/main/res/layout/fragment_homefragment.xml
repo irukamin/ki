@@ -3,13 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:gravity="center|center_horizontal"
     android:orientation="vertical"
     tools:context=".homefragment">
 
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
+        android:layout_marginStart="50dp">
 
         <TableRow
             android:layout_width="match_parent"
@@ -19,19 +21,22 @@
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="金" />
+                android:text="金"
+                android:textSize="34sp" />
 
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="権力" />
+                android:text="権力"
+                android:textSize="34sp"/>
 
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="魔力" />
+                android:text="魔力"
+                android:textSize="34sp"/>
         </TableRow>
 
         <TableRow
@@ -65,19 +70,22 @@
                 android:id="@+id/money_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="0" />
+                tools:text="0"
+                android:textSize="28sp"/>
 
             <TextView
                 android:id="@+id/power_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="0" />
+                tools:text="0"
+                android:textSize="28sp"/>
 
             <TextView
                 android:id="@+id/magic_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="0" />
+                tools:text="0"
+                android:textSize="28sp"/>
         </TableRow>
 
         <TableRow
@@ -110,6 +118,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_weight="10"
-        android:text="Victory Points" />
+        android:text="Victory Points"
+        android:textSize="34sp"/>
 </LinearLayout>

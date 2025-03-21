@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ public class PlayersItemAdapter extends RecyclerView.Adapter<PlayersItemAdapter.
         this.onItemClickListener = onItemClickListener;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setItemList(List<cardData> List){
         itemList = List;
         notifyDataSetChanged();
@@ -53,7 +55,27 @@ public class PlayersItemAdapter extends RecyclerView.Adapter<PlayersItemAdapter.
             holder.btnSubtract.setVisibility(View.VISIBLE);
             holder.count.setVisibility(View.VISIBLE);
             holder.count.setText("金 : "+sharedViewModel.getMoneyCount().getValue());
-        } else {
+        } else if(cardData.getName().equals("女王のなみだ")){
+            holder.btnAdd.setVisibility(View.VISIBLE);
+            holder.btnSubtract.setVisibility(View.VISIBLE);
+            holder.count.setVisibility(View.VISIBLE);
+            holder.count.setText("なみだ : "+sharedViewModel.getTearCount().getValue());
+        }else if(cardData.getName().equals("闇落ち貴族")) {
+            holder.btnAdd.setVisibility(View.VISIBLE);
+            holder.btnSubtract.setVisibility(View.VISIBLE);
+            holder.count.setVisibility(View.VISIBLE);
+            holder.count.setText("貴族 : " + sharedViewModel.getNobleCount().getValue());
+        }else if(cardData.getName().equals("ダークコッペン")){
+            holder.btnAdd.setVisibility(View.VISIBLE);
+            holder.btnSubtract.setVisibility(View.VISIBLE);
+            holder.count.setVisibility(View.VISIBLE);
+            holder.count.setText("パン : " + sharedViewModel.getDiceBread().getValue());
+        }else if(cardData.getName().equals("ポテトン")) {
+            holder.btnAdd.setVisibility(View.VISIBLE);
+            holder.btnSubtract.setVisibility(View.VISIBLE);
+            holder.count.setVisibility(View.VISIBLE);
+            holder.count.setText("金 : " + sharedViewModel.getPotetonCount().getValue());
+        }else {
             // 他のアイテムにはボタンを非表示
             holder.btnAdd.setVisibility(View.GONE);
             holder.btnSubtract.setVisibility(View.GONE);
@@ -64,18 +86,54 @@ public class PlayersItemAdapter extends RecyclerView.Adapter<PlayersItemAdapter.
         holder.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int currentCount = sharedViewModel.getMoneyCount().getValue()+1;
-                sharedViewModel.setMoneyCount(currentCount);
-                sharedViewModel.updateVictoryPoint(itemList);
-                holder.count.setText("金 : "+ currentCount);
+                if (cardData.getName().equals("闇金庫")) {
+                    int currentCount = sharedViewModel.getMoneyCount().getValue()+1;
+                    sharedViewModel.setMoneyCount(currentCount);
+                    holder.count.setText("金 : "+ currentCount);
+                }else if(cardData.getName().equals("女王のなみだ")){
+                    int currentCount = sharedViewModel.getTearCount().getValue()+1;
+                    sharedViewModel.setTearCount(currentCount);
+                    holder.count.setText("なみだ : "+ currentCount);
+                }else if(cardData.getName().equals("闇落ち貴族")){
+                    int currentCount = sharedViewModel.getNobleCount().getValue()+1;
+                    sharedViewModel.setNobleCount(currentCount);
+                    holder.count.setText("貴族 : "+ currentCount);
+                }else if(cardData.getName().equals("ダークコッペン")){
+                    int currentCount = sharedViewModel.getDiceBread().getValue()+1;
+                    sharedViewModel.setDiceBreadCount(currentCount);
+                    holder.count.setText("パン : "+ currentCount);
+                }else if(cardData.getName().equals("ポテトン")){
+                    int currentCount = sharedViewModel.getPotetonCount().getValue()+1;
+                    sharedViewModel.setPotetonCount(currentCount);
+                    holder.count.setText("金 : "+ currentCount);
+                }
+                backfragment.updateVictoryPoints();
             }
         });
 
         holder.btnSubtract.setOnClickListener(v -> {
-            int currentCount = sharedViewModel.getMoneyCount().getValue()-1;
-            if(currentCount>=0)sharedViewModel.setMoneyCount(currentCount);
-            sharedViewModel.updateVictoryPoint(itemList);
-            holder.count.setText("金 : "+currentCount);
+            if (cardData.getName().equals("闇金庫")&&sharedViewModel.getMoneyCount().getValue()>0) {
+                int currentCount = sharedViewModel.getMoneyCount().getValue()-1;
+                sharedViewModel.setMoneyCount(currentCount);
+                holder.count.setText("金 : "+ currentCount);
+            }else if(cardData.getName().equals("女王のなみだ")&&sharedViewModel.getTearCount().getValue()>0){
+                int currentCount = sharedViewModel.getTearCount().getValue()-1;
+                sharedViewModel.setTearCount(currentCount);
+                holder.count.setText("なみだ : "+ currentCount);
+            }else if(cardData.getName().equals("闇落ち貴族")&&sharedViewModel.getNobleCount().getValue()>0){
+                int currentCount = sharedViewModel.getNobleCount().getValue()-1;
+                sharedViewModel.setNobleCount(currentCount);
+                holder.count.setText("貴族 : "+ currentCount);
+            }else if(cardData.getName().equals("ダークコッペン")&&sharedViewModel.getDiceBread().getValue()>0){
+                int currentCount = sharedViewModel.getDiceBread().getValue()-1;
+                sharedViewModel.setDiceBreadCount(currentCount);
+                holder.count.setText("パン : "+ currentCount);
+            }else if(cardData.getName().equals("ポテトン")&&sharedViewModel.getPotetonCount().getValue()>0){
+                int currentCount = sharedViewModel.getPotetonCount().getValue()-1;
+                sharedViewModel.setPotetonCount(currentCount);
+                holder.count.setText("金 : "+ currentCount);
+            }
+            backfragment.updateVictoryPoints();
         });
     }
 

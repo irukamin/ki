@@ -48,11 +48,4 @@ public class MainActivity extends AppCompatActivity {
         transaction.addToBackStack(null);  // バックスタックに追加することで戻る操作ができる
         transaction.commit();
     }
-    public void updateVictoryPoint(int victoryPoint) {
-        // homefragment を取得して victoryTextView を更新
-        homefragment homeFragment = (homefragment) getSupportFragmentManager().findFragmentByTag("homeFragment");
-        if (homeFragment != null) {
-            homeFragment.updateVictoryPoint(victoryPoint);
-        }
-    }
 }

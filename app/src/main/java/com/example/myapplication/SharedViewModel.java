@@ -1,18 +1,34 @@
 package com.example.myapplication;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SharedViewModel extends ViewModel {
     int totalVictoryPoints = 0;
     int koppenCount = 0;
     int panyaCount = 0;
+    int sakabaCount = 0;
+    int cakeCount = 0;
     int powerCount = 0;
     int moneyCount = 0;
+    int tearCount = 0;
+    int nobleCount = 0;
+    int diceBreadCount = 0;
+    int sumpower = 0;
+    int sumcard = 0;
+    int sumbook = 0;
+    int sortcard = 0;
+    int potetonCount = 0;
+
 
     private MutableLiveData<List<cardData>> playersItemLiveData = new MutableLiveData<>(new ArrayList<>());
     private MutableLiveData<Integer> moneyNumber = new MutableLiveData<>(0);
@@ -20,7 +36,10 @@ public class SharedViewModel extends ViewModel {
     private MutableLiveData<Integer> magicNumber = new MutableLiveData<>(0);
     private MutableLiveData<Integer> MoneyCount = new MutableLiveData<>(0);
     private MutableLiveData<Integer> victoryPoints = new MutableLiveData<>(0);
-
+    private MutableLiveData<Integer> TearCount = new MutableLiveData<>(0);
+    private MutableLiveData<Integer> NobleCount = new MutableLiveData<>(0);
+    private MutableLiveData<Integer> DiceBreadCount = new MutableLiveData<>(0);
+    private MutableLiveData<Integer> PotetonCount = new MutableLiveData<>(0);
     public LiveData<Integer> getMoneyNumber() {
         return moneyNumber;
     }
@@ -56,11 +75,35 @@ public class SharedViewModel extends ViewModel {
     }
 
     public void setVictoryPoints(int points) {
-        victoryPoints.setValue(points);
+        victoryPoints.postValue(points);
     }
 
     public LiveData<List<cardData>> getPlayersItem() {
         return playersItemLiveData;
+    }
+    public LiveData<Integer> getTearCount() { return TearCount;}
+
+    public void setTearCount(int tears) {TearCount.setValue(tears);}
+    public LiveData<Integer> getNobleCount() {
+        return NobleCount;
+    }
+    public LiveData<Integer> getDiceBread() {
+        return DiceBreadCount;
+    }
+
+    public void setDiceBreadCount(int dices) {
+        DiceBreadCount.setValue(dices);
+    }
+
+    public void setNobleCount(int nobles) {
+        NobleCount.setValue(nobles);
+    }
+    public LiveData<Integer> getPotetonCount(){return PotetonCount;}
+    public void setPotetonCount(int potetons){PotetonCount.setValue(potetons);}
+    private MutableLiveData<Integer> victoryPointsLiveData = new MutableLiveData<>();
+
+    public LiveData<Integer> getVictoryPointsLiveData() {
+        return victoryPointsLiveData;
     }
 
     public void addItem(cardData item) {
@@ -80,44 +123,136 @@ public class SharedViewModel extends ViewModel {
         }
     }
 
-    public int updateVictoryPoint(List<cardData> playerdata) {
-
+    public int updateVictoryPoint(@NonNull List<cardData> playerdata) {
         totalVictoryPoints = 0;
         koppenCount = 0;
-        panyaCount = 1;
+        panyaCount = 0;
+        sakabaCount = 0;
+        cakeCount = 0;
         powerCount = 0;
         moneyCount = getMoneyCount().getValue();
+        boolean moneyCheck = false;
+        tearCount = getTearCount().getValue();
+        boolean tearCheck = false;
+        nobleCount = getNobleCount().getValue();
+        boolean nobleCheck = false;
+        diceBreadCount = getDiceBread().getValue();
+        boolean diBreCheck = false;
+        sumcard = 0;
+        sumbook = 0;
+        sumpower = getMoneyNumber().getValue() + getPowerNumber().getValue() + getMagicNumber().getValue();
+        potetonCount = 0;
+        boolean potetonCheck = false;
+
+        Set<String> uniqueNames = new HashSet<>();
+        Map<String, Integer> nameCountMap = new HashMap<>();  // 名前ごとのカウント用
 
         for (cardData item : playerdata) {
-            if(item.getName().equals("パンの妖精　コッペン")){
-                koppenCount++;
+            uniqueNames.add(item.getName());
+            sumcard++;
+
+            // カウント系の処理を一度でまとめる
+            switch (item.getName()) {
+                case "パンの妖精　コッペン":
+                    koppenCount++;
+                    break;
+                case "パン屋":
+                    panyaCount++;
+                    break;
+                case "酒場":
+                    sakabaCount++;
+                    break;
+                case "ケーキ屋":
+                    cakeCount++;
+                    break;
+                case "ポテトン":
+                    potetonCount++;
+                    break;
+                default:
+                    break;
             }
-            if(item.getName().equals("パン屋")){
-                panyaCount+=2;
+
+            // 特殊タグがある場合にsumbookを計算
+            if (item.getTag() % 10 == 3) {
+                sumbook++;
             }
+
+            // カードの力（power）を加算
             powerCount += item.getPower();
+
+            // 名前ごとの勝利ポイント計算用
+            nameCountMap.put(item.getName(), nameCountMap.getOrDefault(item.getName(), 0) + 1);
         }
-        // playersItem に含まれるカードの勝利ポイント（vp）を合計する
+
+        // 名前ごとに勝利ポイントを計算
         for (cardData item : playerdata) {
-            if(item.getName().equals("パンの妖精　コッペン")){
-                item.setVp(koppenCount);
+            int vp = item.getVp();
+            switch (item.getName()) {
+                case "パンの妖精　コッペン":
+                    vp = koppenCount;
+                    break;
+                case "脱法パン屋":
+                    vp = panyaCount * 2 + 1;
+                    break;
+                case "麗しき女王像":
+                    vp = powerCount / 4;
+                    break;
+                case "破壊された女王像":
+                    vp = uniqueNames.size() / 3;
+                    break;
+                case "天地開闢のパン屋":
+                    vp = 5 + panyaCount;
+                    break;
+                case "英雄神話の酒屋":
+                    vp = 5 + sakabaCount;
+                    break;
+                case "世界豊穣のケーキ屋":
+                    vp = 5 + cakeCount;
+                    break;
+                case "幻虹竜":
+                    vp = sumpower / 3;
+                    break;
+                case "禁断の魔法研究所":
+                    vp = sumbook * 2;
+                    break;
+                case "天へと至るエスカリエ":
+                    vp = (sumcard / 3) * 2;
+                    break;
+                default:
+                    break;
             }
-            if(item.getName().equals("脱法パン屋")){
-                item.setVp(panyaCount);
-            }
-            if(item.getName().equals("麗しき女王像")){
-                item.setVp(powerCount/4);
-            }
-            totalVictoryPoints += item.getVp();  // vp（勝利ポイント）の合計を計算
+            item.setVp(vp);  // カードごとにVP設定
+            totalVictoryPoints += vp;
         }
-        // "闇金庫"が含まれているかチェック
+
+        // 特別なカード「闇金庫」「女王のなみだ」などに対する勝利ポイント計算
         for (cardData item : playerdata) {
-            if (item.getName().equals("闇金庫")) {
-                totalVictoryPoints += moneyCount;  // "闇金庫"があればmoneyCountを加算
-                break;  // 見つかったらループを抜ける
+            if (item.getName().equals("闇金庫")&&moneyCheck == false) {
+                totalVictoryPoints += moneyCount;
+                moneyCheck = true;
+            }
+            if (item.getName().equals("女王のなみだ")&&tearCheck == false) {
+                totalVictoryPoints += tearCount / 2;
+                tearCheck = true;
+            }
+            if (item.getName().equals("闇落ち貴族")&&nobleCheck == false) {
+                totalVictoryPoints += nobleCount;
+                nobleCheck = true;
+            }
+            if (item.getName().equals("ダークコッペン")&&diBreCheck == false) {
+                totalVictoryPoints += diceBreadCount;
+                diBreCheck = true;
+            }
+            if (item.getName().equals("ポテトン")&&potetonCheck == false){
+                totalVictoryPoints += potetonCount / 2;
+                potetonCheck = true;
             }
         }
+
         setVictoryPoints(totalVictoryPoints);
         return totalVictoryPoints;
     }
+
 }
+//第二弾のみ開始->第三弾なかったわ
+//破壊像

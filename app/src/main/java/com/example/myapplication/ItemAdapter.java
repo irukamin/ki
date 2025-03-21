@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         this.onItemClickListener = onItemClickListener;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setItemList(List<cardData> itemList) {
         this.itemList = itemList;
         notifyDataSetChanged();
@@ -42,16 +44,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         cardData card = itemList.get(position);
         holder.textView.setText(card.getName());
-
-//        // "闇金庫" のみボタンを表示
-//        if (card.getName().equals("闇金庫")) {
-//            holder.btnAdd.setVisibility(View.VISIBLE);
-//            holder.btnSubtract.setVisibility(View.VISIBLE);
-//        } else {
-//            holder.btnAdd.setVisibility(View.GONE);
-//            holder.btnSubtract.setVisibility(View.GONE);
-//        }
-
         // クリックリスナー
         holder.itemView.setOnClickListener(v -> onItemClickListener.onItemClick(position));
     }

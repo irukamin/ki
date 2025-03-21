@@ -7,35 +7,37 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.databinding.FragmentBackBinding;  // ViewBindingのインポート
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class backfragment extends Fragment {
 
     private ItemAdapter itemAdapter;
     private PlayersItemAdapter playersItemAdapter;
-    private TextView victoryTextView;
-    private List<cardData> playersItem = new ArrayList<>();
-    private SharedViewModel sharedViewModel;
+    private static TextView victoryTextView;
+    private static List<cardData> playersItem = new ArrayList<>();
+    private static SharedViewModel sharedViewModel;
     int totalVictoryPoints = 0;
 
     public backfragment() {
         // 必須のコンストラクタ
     }
 
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint({"MissingInflatedId", "NotifyDataSetChanged"})
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         FragmentBackBinding binding = FragmentBackBinding.inflate(inflater, container, false);
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
@@ -45,6 +47,9 @@ public class backfragment extends Fragment {
         RecyclerView itemListRecyclerView = binding.getRoot().findViewById(R.id.itemListRecyclerView);
         RecyclerView playersItemRecyclerView = binding.getRoot().findViewById(R.id.area);
 
+        itemListRecyclerView.setItemAnimator(null);  // アニメーションを無効にする
+        playersItemRecyclerView.setItemAnimator(null);
+
         itemListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         playersItemRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -52,7 +57,7 @@ public class backfragment extends Fragment {
 
         // データの登録
         itemList.add(new cardData("パン屋", 911, 2, 0, 0, 1));
-        itemList.add(new cardData("酒屋", 911, 1, 1, 0, 1));
+        itemList.add(new cardData("酒場", 911, 1, 1, 0, 1));
         itemList.add(new cardData("ケーキ屋", 911, 1, 0, 1, 1));
         itemList.add(new cardData("オーブン", 912, 0, 3, 0, 1));
         itemList.add(new cardData("倉庫", 911, 0, 0, 0, 1));
@@ -114,7 +119,7 @@ public class backfragment extends Fragment {
         itemList.add(new cardData("天へと至るエスカリエ", 247, 0, 0, 0, 0));
         itemList.add(new cardData("ポテト屋", 321, 2, 0, 0, 1));
         itemList.add(new cardData("パスタ屋", 321, 1, 1, 0, 1));
-        itemList.add(new cardData("豆や", 321, 0, 1, 2, 1));
+        itemList.add(new cardData("豆屋", 321, 0, 1, 2, 1));
         itemList.add(new cardData("農場", 321, 2, 2, 0, 1));
         itemList.add(new cardData("製麺所", 321, 2, 1, 0, 1));
         itemList.add(new cardData("養鶏場", 321, 2, 0, 2, 1));
@@ -136,6 +141,7 @@ public class backfragment extends Fragment {
 
 
         sharedViewModel.getPlayersItem().observe(getViewLifecycleOwner(), new Observer<List<cardData>>() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onChanged(List<cardData> playerData) {
                 if (playerData != null) {
@@ -146,18 +152,7 @@ public class backfragment extends Fragment {
                     playersItemAdapter.setItemList(playersItem);
                 }
                 totalVictoryPoints = sharedViewModel.updateVictoryPoint(playersItem);
-                // Activity に勝利ポイントを渡して homefragment を更新
-                if (getActivity() instanceof MainActivity) {
-                    ((MainActivity) getActivity()).updateVictoryPoint(totalVictoryPoints);
-                }
                 victoryTextView.setText("vp : " + totalVictoryPoints);
-            }
-        });
-
-        sharedViewModel.getMoneyCount().observe(getViewLifecycleOwner(), new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer integer) {
-                updateVictoryPoints();
             }
         });
 
@@ -170,9 +165,8 @@ public class backfragment extends Fragment {
                 cardData selectedItem = itemList.get(position);
                 // playersItem にアイテム追加処理
                 playersItem.add(selectedItem);
-                playersItemAdapter.notifyDataSetChanged();  // 更新
+                playersItemAdapter.notifyItemInserted(playersItem.size() - 1); // 更新
                 sharedViewModel.addItem(selectedItem);
-                updateVictoryPoints();
             }
         });
 
@@ -184,7 +178,7 @@ public class backfragment extends Fragment {
                 cardData selectedItem = playersItem.get(position);
                 boolean bankchek = false;
                 playersItem.remove(selectedItem);
-                playersItemAdapter.notifyDataSetChanged();  // 更新
+                playersItemAdapter.notifyItemRemoved(position);
                 sharedViewModel.deleteItem(selectedItem.getName());
                 for (cardData item:playersItem){
                     if(item.getName().equals("闇金庫")){
@@ -211,15 +205,20 @@ public class backfragment extends Fragment {
             updateVictoryPoints();
         });
 
+        sharedViewModel.getVictoryPointsLiveData().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer totalVictoryPoints) {
+                // LiveDataが更新されたら、UIスレッドで勝利ポイントを更新
+                victoryTextView.setText("vp : " + totalVictoryPoints);
+            }
+        });
+
         return binding.getRoot();
     }
 
     // 勝利ポイントを更新
-    private void updateVictoryPoints() {
+    static void updateVictoryPoints() {
         int totalVictoryPoints = sharedViewModel.updateVictoryPoint(playersItem);
-        if (getActivity() instanceof MainActivity) {
-            ((MainActivity) getActivity()).updateVictoryPoint(totalVictoryPoints);
-        }
         victoryTextView.setText("vp : " + totalVictoryPoints);
     }
 

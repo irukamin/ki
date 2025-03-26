@@ -26,8 +26,10 @@ public class SharedViewModel extends ViewModel {
     int sumpower = 0;
     int sumcard = 0;
     int sumbook = 0;
-    int sortcard = 0;
+    int calculate = 0;
     int potetonCount = 0;
+    int komeCount = 0;
+    int stCount = 0;
 
 
     private MutableLiveData<List<cardData>> playersItemLiveData = new MutableLiveData<>(new ArrayList<>());
@@ -40,6 +42,9 @@ public class SharedViewModel extends ViewModel {
     private MutableLiveData<Integer> NobleCount = new MutableLiveData<>(0);
     private MutableLiveData<Integer> DiceBreadCount = new MutableLiveData<>(0);
     private MutableLiveData<Integer> PotetonCount = new MutableLiveData<>(0);
+    private MutableLiveData<Integer> KomeCount = new MutableLiveData<>(0);
+    private MutableLiveData<Integer> StCount = new MutableLiveData<>(0);
+    private MutableLiveData<Boolean> PlayerCheck = new MutableLiveData<>(false);
     public LiveData<Integer> getMoneyNumber() {
         return moneyNumber;
     }
@@ -105,6 +110,12 @@ public class SharedViewModel extends ViewModel {
     public LiveData<Integer> getVictoryPointsLiveData() {
         return victoryPointsLiveData;
     }
+    public LiveData<Integer> getKomeCount() {return KomeCount;}
+    public void setKomeCount(int komes) {KomeCount.setValue(komes);}
+    public LiveData<Integer> getStCount() {return StCount;}
+    public void setStCount(int sts) {StCount.setValue(sts);}
+    public LiveData<Boolean> getPlayerCheck() {return PlayerCheck;}
+    public void setPlayerCheck(boolean playerCheck) {PlayerCheck.setValue(playerCheck);}
 
     public void addItem(cardData item) {
         List<cardData> currentList = playersItemLiveData.getValue();
@@ -141,8 +152,12 @@ public class SharedViewModel extends ViewModel {
         sumcard = 0;
         sumbook = 0;
         sumpower = getMoneyNumber().getValue() + getPowerNumber().getValue() + getMagicNumber().getValue();
-        potetonCount = 0;
+        potetonCount = getPotetonCount().getValue();
         boolean potetonCheck = false;
+        komeCount = getKomeCount().getValue();
+        boolean komeCheck = false;
+        stCount = getStCount().getValue();
+        boolean playerCheck = getPlayerCheck().getValue();
 
         Set<String> uniqueNames = new HashSet<>();
         Map<String, Integer> nameCountMap = new HashMap<>();  // 名前ごとのカウント用
@@ -176,6 +191,11 @@ public class SharedViewModel extends ViewModel {
             if (item.getTag() % 10 == 3) {
                 sumbook++;
             }
+            calculate = item.getTag() % 100;
+            if (calculate/10 == 1){
+                stCount++;
+            }
+
 
             // カードの力（power）を加算
             powerCount += item.getPower();
@@ -218,6 +238,12 @@ public class SharedViewModel extends ViewModel {
                 case "天へと至るエスカリエ":
                     vp = (sumcard / 3) * 2;
                     break;
+                case "八十八式廻天要塞砲「稲魂」":
+                    vp = sumpower / 3;
+                    break;
+                case "幽玄の寶船":
+                    vp = stCount * 2;
+                    break;
                 default:
                     break;
             }
@@ -247,8 +273,12 @@ public class SharedViewModel extends ViewModel {
                 totalVictoryPoints += potetonCount / 2;
                 potetonCheck = true;
             }
+            if (item.getName().equals("年貢の納め時")&&komeCheck == false){
+                totalVictoryPoints += komeCount;
+                komeCheck = true;
+            }
         }
-
+        if(playerCheck)totalVictoryPoints += 10;
         setVictoryPoints(totalVictoryPoints);
         return totalVictoryPoints;
     }

@@ -138,7 +138,34 @@ public class backfragment extends Fragment {
         itemList.add(new cardData("太陽神のピラミッド", 347, 24, 0, 0, 10));
         itemList.add(new cardData("海上大聖堂ラヴィオリ", 347, 0, 0, 0, 10));
         itemList.add(new cardData("空中庭園ビーンストーク", 347, 0, 0, 0, 13));
+        itemList.add(new cardData("米粉パン屋", 121, 2, 1, 1, 1));
+        itemList.add(new cardData("米屋", 121, 3, 3, 0, 0));
+        itemList.add(new cardData("米騒動", 125, 0, 0, 0, 1));
+        itemList.add(new cardData("パン狩り隊", 124, 2, 0, 2, 2));
+        itemList.add(new cardData("エレキテル研究所", 121, 1, 1, 1, 2));
+        itemList.add(new cardData("東亞精米", 124, 3, 3, 0, 2));
+        itemList.add(new cardData("年貢の納め時", 125, 3, 1, 0, 0));
+        itemList.add(new cardData("忍者ギルド", 124, 5, 0, 0, 1));
+        itemList.add(new cardData("ガトリング侍", 124, 0, 5, 0, 2));
+        itemList.add(new cardData("妖術狐兵", 124, 0, 0, 5, 1));
+        itemList.add(new cardData("南蛮煙管", 122, 2, 2, 2, 2));
+        itemList.add(new cardData("天駆猫", 126, 3, 1, 3, 4));
+        itemList.add(new cardData("呪怨の懐中時計", 122, 0, 0, 3, -2));
+        itemList.add(new cardData("三日月の簪", 122, 0, 0, 3, 2));
+        itemList.add(new cardData("一文無しの鉄火場", 121, 1, 2, 0, 2));
+        itemList.add(new cardData("月虹の霊峰", 127, 2, 2, 2, 5));
+        itemList.add(new cardData("御伽噺の宝物殿", 131, 0, 0, 0, 8));
+        itemList.add(new cardData("千本桜の大霊廟", 131, 0, 18, 0, 5));
+        itemList.add(new cardData("天叢雲剣", 147, 0, 0, 0, 5));
+        itemList.add(new cardData("八十八式廻天要塞砲「稲魂」", 141, 0, 0, 0, 0));
+        itemList.add(new cardData("幽玄の寶船", 147, 0, 0, 0, 0));
 
+        /*
+    上のくらいから
+    シリーズ　　9:初代, 1:拡張第一弾->23
+    ジャンル　　1:スタンダード, 2:ランダマイザ―, 3:レジェンドⅠ, 4:レジェンドⅡ
+    カテゴリー　1:建築物, 2:アイテム, 3:魔導書, 4:組織, 5:イベント, 6:精霊, 7:聖地
+     */
 
         sharedViewModel.getPlayersItem().observe(getViewLifecycleOwner(), new Observer<List<cardData>>() {
             @SuppressLint("SetTextI18n")
@@ -177,16 +204,42 @@ public class backfragment extends Fragment {
                 // playersItem 内のアイテムクリック処理
                 cardData selectedItem = playersItem.get(position);
                 boolean bankchek = false;
+                boolean tearchek = false;
+                boolean nobleCheck = false;
+                boolean diBreCheck = false;
+                boolean potetonCheck = false;
+                boolean komechek = false;
                 playersItem.remove(selectedItem);
                 playersItemAdapter.notifyItemRemoved(position);
                 sharedViewModel.deleteItem(selectedItem.getName());
                 for (cardData item:playersItem){
-                    if(item.getName().equals("闇金庫")){
-                        bankchek = true;
-                        break;
+                    switch (item.getName()){
+                        case "闇金庫":
+                            bankchek = true;
+                            break;
+                        case "女王のなみだ":
+                            tearchek = true;
+                            break;
+                        case "闇落ち貴族":
+                            nobleCheck = true;
+                            break;
+                        case "ダークコッペン":
+                            diBreCheck = true;
+                            break;
+                        case "ポテトン":
+                            potetonCheck = true;
+                            break;
+                        case "年貢の納め時":
+                            komechek = true;
+                            break;
                     }
                 }
                 if (!bankchek)sharedViewModel.setMoneyCount(0);
+                if (!tearchek)sharedViewModel.setTearCount(0);
+                if (!nobleCheck)sharedViewModel.setNobleCount(0);
+                if (!diBreCheck)sharedViewModel.setDiceBreadCount(0);
+                if (!potetonCheck)sharedViewModel.setPotetonCount(0);
+                if (!komechek)sharedViewModel.setKomeCount(0);
                 updateVictoryPoints();
             }
         });

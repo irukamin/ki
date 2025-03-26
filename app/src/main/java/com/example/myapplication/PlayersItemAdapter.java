@@ -75,6 +75,11 @@ public class PlayersItemAdapter extends RecyclerView.Adapter<PlayersItemAdapter.
             holder.btnSubtract.setVisibility(View.VISIBLE);
             holder.count.setVisibility(View.VISIBLE);
             holder.count.setText("金 : " + sharedViewModel.getPotetonCount().getValue());
+        }else if(cardData.getName().equals("年貢の納め時")) {
+            holder.btnAdd.setVisibility(View.VISIBLE);
+            holder.btnSubtract.setVisibility(View.VISIBLE);
+            holder.count.setVisibility(View.VISIBLE);
+            holder.count.setText("コメ　："+ sharedViewModel.getKomeCount().getValue());
         }else {
             // 他のアイテムにはボタンを非表示
             holder.btnAdd.setVisibility(View.GONE);
@@ -106,6 +111,10 @@ public class PlayersItemAdapter extends RecyclerView.Adapter<PlayersItemAdapter.
                     int currentCount = sharedViewModel.getPotetonCount().getValue()+1;
                     sharedViewModel.setPotetonCount(currentCount);
                     holder.count.setText("金 : "+ currentCount);
+                }else if(cardData.getName().equals("年貢の納め時")){
+                    int currentCount = sharedViewModel.getKomeCount().getValue()+1;
+                    sharedViewModel.setKomeCount(currentCount);
+                    holder.count.setText("コメ　："+currentCount);
                 }
                 backfragment.updateVictoryPoints();
             }
@@ -132,6 +141,10 @@ public class PlayersItemAdapter extends RecyclerView.Adapter<PlayersItemAdapter.
                 int currentCount = sharedViewModel.getPotetonCount().getValue()-1;
                 sharedViewModel.setPotetonCount(currentCount);
                 holder.count.setText("金 : "+ currentCount);
+            } else if (cardData.getName().equals("年貢の納め時")&&sharedViewModel.getKomeCount().getValue()>0) {
+                int currentCount = sharedViewModel.getKomeCount().getValue()-1;
+                sharedViewModel.setKomeCount(currentCount);
+                holder.count.setText("コメ　："+currentCount);
             }
             backfragment.updateVictoryPoints();
         });

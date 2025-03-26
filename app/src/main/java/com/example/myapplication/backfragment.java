@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,15 +20,14 @@ import com.example.myapplication.databinding.FragmentBackBinding;  // ViewBindin
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class backfragment extends Fragment {
 
     private ItemAdapter itemAdapter;
     private PlayersItemAdapter playersItemAdapter;
     private static TextView victoryTextView;
+    private boolean playerCheck;  // playerCheckはboolean型のまま
+    private CheckBox playerCheckBox;  // CheckBoxのインスタンスを保持するための変数を追加
     private static List<cardData> playersItem = new ArrayList<>();
     private static SharedViewModel sharedViewModel;
     int totalVictoryPoints = 0;
@@ -35,7 +36,7 @@ public class backfragment extends Fragment {
         // 必須のコンストラクタ
     }
 
-    @SuppressLint({"MissingInflatedId", "NotifyDataSetChanged"})
+    @SuppressLint({"MissingInflatedId", "NotifyDataSetChanged"} )
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -43,6 +44,7 @@ public class backfragment extends Fragment {
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
         victoryTextView = binding.getRoot().findViewById(R.id.victory_count);
+        playerCheckBox = binding.getRoot().findViewById(R.id.checkBox);  // CheckBoxのインスタンスを取得
 
         RecyclerView itemListRecyclerView = binding.getRoot().findViewById(R.id.itemListRecyclerView);
         RecyclerView playersItemRecyclerView = binding.getRoot().findViewById(R.id.area);
@@ -243,7 +245,14 @@ public class backfragment extends Fragment {
                 updateVictoryPoints();
             }
         });
-
+        playerCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // isCheckedがtrueの場合、playerCheckをtrueに、falseの場合、falseに設定
+                sharedViewModel.setPlayerCheck(isChecked);
+                updateVictoryPoints();
+            }
+        });
         // RecyclerView にアダプター設定
         itemListRecyclerView.setAdapter(itemAdapter);
         playersItemRecyclerView.setAdapter(playersItemAdapter);
